@@ -1,0 +1,115 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  --btn-border-radius: 5px;
+  --btn-background: #ccc;
+}
+
+body{
+  width: 100vw;
+  height: 100vh;
+}
+
+.hide{
+  display: none;
+}
+
+#container{
+  background: #cccccc;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+#welcome-page{
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.8);
+  padding: 200px;
+  text-align: center;
+  z-index: 100;
+  position: absolute;
+}
+
+#welcome-heading{
+  font-size: 80px;
+  color: greenyellow;
+  margin-bottom: 20px;
+  margin-top: 140px;
+}
+
+.pick-game{
+  height: 50px;
+  width: 180px;
+  font-size: 1.2em;
+  background: var(--btn-background);
+  border-radius: var(--btn-border-radius);
+}
+
+.welcome-enter-name{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.name-label{
+  color: white;
+  font-size: 28px;
+  margin-right: 8px;
+}
+
+.player-name{
+  vertical-align: middle;
+  height: 40px;
+  border-radius: var(--btn-border-radius);
+  font-size: 28px;
+}
+
+#welcome-start-game{
+  margin-top: 10px;
+}
+
+#start-game{
+  height: 50px;
+  width: 120px;
+  border-radius: var(--btn-border-radius);
+  background: var(--btn-background);
+  font-size: 1.2em;
+}
+
+#grid-container{
+  height: 100%;
+  width: 100%;
+  background: darkcyan;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  width: 60%;
+  height:60%;
+  background: darkcyan;
+}
+
+.cell{
+  border: 3px solid black;
+  font-size: 12em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+
