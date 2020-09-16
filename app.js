@@ -36,17 +36,28 @@ const displayController = (function(){
     addHidden(gameOverPage, player1Div, player2Div, startDiv);
   }
 
-  function setPosition(){
-    return position;
+ 
+  function botMove(index, mark){
+    cells[index].textContent = mark;
+    console.log('botmiving');
   }
 
   function playerMove(){
-    //Each cell ID has a unique number at index[2]
-    //to correspond to gameBoard array index later
-    position = this.id[2];
-    let mark = gameLogic.PlayerMove();
-    this.textContent = mark;
-    gameLogic.updateBoard(position, mark);
+    if(checkPlayerMove(this)){
+      position = this.id[2];
+      let mark = gameLogic.PlayerMove();
+      this.textContent = mark;
+      gameLogic.updateBoard(position, mark);
+    }else {
+      return;
+    }
+  }
+  function checkPlayerMove(elem){
+    if(elem.textContent == 'X' || elem.textContent =="O"){
+      return false;
+    }else{
+      return true;
+    }
   }
 
   function winnerScreen(winner){
@@ -139,7 +150,7 @@ const displayController = (function(){
     elem.style.border = "6px solid red";
   }
 
-  return {getPlayers, winnerScreen, drawScreen};
+  return {getPlayers, winnerScreen, drawScreen, botMove};
 
 })();
 
@@ -148,17 +159,13 @@ const displayController = (function(){
 const gameLogic = (function(){
   
   let gameBoard = [0,1,2,3,4,5,6,7,8];
+  let validMoves = [0,1,2,3,4,5,6,7,8];
   let players;
-  let currentPlayerTurn = 1;
+  let currentPlayer;
+  let gameOver = false;
 
   function PlayerMove(){
-    if (currentPlayerTurn == 1){
-      endTurn();
-      return "X";
-    }else {
-      endTurn();
-      return "O";
-    }
+    return currentPlayer.mark;
   }
 
   //Probably a better way to do this
@@ -176,6 +183,7 @@ const gameLogic = (function(){
         g[2] == g[4] && g[2] ==g[6])
     {
       declareWinner();
+      gameOver = true;
       return;
     }if (!gameBoard.join('').match(regex)){
       declareDraw();
@@ -188,40 +196,79 @@ const gameLogic = (function(){
   
 
   function declareWinner(){
-    if(currentPlayerTurn == 2){
-      displayController.winnerScreen(players[0].name);
-    }else{
-      displayController.winnerScreen(players[1].name);
-    }
+    displayController.winnerScreen(currentPlayer.name);
   }
   
   function updateBoard(position, mark){
     gameBoard.splice(position, 1, mark);
+    console.log(currentPlayer);
     checkWinConditions();
+    endTurn();
+    updateValidMoves();
+    if(gameOver == false){
+      checkBotTurn();
+    }
   }
 
   function startGame(){
+    gameOver = false;
     gameBoard = [0,1,2,3,4,5,6,7,8];
     players = displayController.getPlayers();
     setPlayerMark(players);
     setPlayerTurn(players);
+    checkBotTurn();
   }
   
-  function setPlayerMark(players){
-    players[0].mark = "X";
-    players[1].mark = "O";
+  function checkBotTurn(){
+    if (currentPlayer.name == "AI Bot"){
+      botMove();
     }
+  }
+  function botMove(){
+    let bot = currentPlayer;
+    let len = validMoves.length;
+    let rand = Math.floor(Math.random()*len);
+    let index = validMoves[rand];
+    displayController.botMove(index, bot.mark);
+    updateBoard(index, bot.mark);
+     
+  }
+
+  function updateValidMoves(){
+    validMoves = gameBoard
+      .join('')
+      .split('X')
+      .join('')
+      .split('O')
+      .join('')
+      .split('');
+  }
+
+  function setPlayerMark(players){
+    let rand = Math.round(Math.random());
+    if (rand == 0){
+    players[0].mark = 'X';
+    players[1].mark = 'O';
+    }else {
+    players[0].mark = 'O';
+    players[1].mark = 'X';
+    }
+  }
   
   function setPlayerTurn(players){
-    players[0].turn = 1;
-    players[1].turn = 2;
+    let rand = Math.round(Math.random());
+    if (rand == 0){
+    currentPlayer = players[0];
+    }else {
+    currentPlayer = players[1];
+    }
   }
 
   function endTurn(){
-    if(currentPlayerTurn == 1){
-      currentPlayerTurn =2;
+    if(currentPlayer == players[0]){
+      currentPlayer = players[1];
     }else {
-      currentPlayerTurn =1;
+      currentPlayer = players[0];
     }
   }
 
