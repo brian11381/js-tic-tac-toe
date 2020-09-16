@@ -1,10 +1,12 @@
 //Dom manipulation module
 const displayController = (function(){
+
   //Variables
   let gameType;
   let playerOne;
   let playerTwo;
   let position;
+
   //Dom elements
   const welcomPage = document.querySelector('#welcome-page');
   const btnPickGame = document.querySelectorAll('.pick-game');
@@ -15,13 +17,25 @@ const displayController = (function(){
   const player1Input = document.querySelector('#player1-name');
   const player2Input = document.querySelector('#player2-name');
   const cells = document.querySelectorAll('.cell');
+  const gameOverMsg = document.querySelector('#game-over-message');
+  const retry = document.querySelector('#retry');
+  const gameOverPage = document.querySelector('#game-over-page');
+  const exit = document.querySelector('#exit');
 
   //Event listeners
   btnPickGame.forEach(btn => btn.addEventListener('click', setGameType));
   btnPickGame.forEach(btn => btn.addEventListener('click', updateInputs));
   btnStartGame.addEventListener('click', checkPlayers);
   cells.forEach(cell => cell.addEventListener('click', playerMove));
+  retry.addEventListener('click', checkPlayers);
+  exit.addEventListener('click', resetPage);
 
+  function resetPage(){
+    addHidden(gameOverPage);
+    removeHidden(welcomPage);
+    btnPickGame.forEach(btn => removeHidden(btn));
+    addHidden(player1Div, player2Div, startDiv);
+  }
 
   function setPosition(){
     return position;
@@ -35,11 +49,13 @@ const displayController = (function(){
   }
 
   function winnerScreen(winner){
-    console.log(winner);
+    gameOverMsg.textContent = `${winner} wins!!!`;
+    removeHidden(gameOverPage);
   }
 
   function drawScreen(){
-    console.log('draw');
+    gameOverMsg.textContent = "Draw!!!";
+    removeHidden(gameOverPage);
   }
 
   (function fixGridBorders(){
@@ -59,6 +75,8 @@ const displayController = (function(){
   function getPlayers(){
     return [playerOne, playerTwo];
   }
+
+  //Form validation
   function checkPlayers(){
     if(player1Input.value == ""){
       nameError(player1Input);
@@ -76,7 +94,8 @@ const displayController = (function(){
   }
   
   function displayNewGame(){
-    toggleHidden(welcomPage);
+    addHidden(welcomPage);
+    addHidden(gameOverPage);
     cells.forEach(cell => cell.textContent = "");
   }
 
@@ -94,16 +113,28 @@ const displayController = (function(){
   }
 
   function updateInputs(){
-    btnPickGame.forEach(btn => toggleHidden(btn));
-    toggleHidden(player1Div);
-    toggleHidden(startDiv);
+    btnPickGame.forEach(btn => addHidden(btn));
+    removeHidden(player1Div);
+    removeHidden(startDiv);
     if(this.id == "pvp"){
-      toggleHidden(player2Div);
+      removeHidden(player2Div);
     }
   }
 
-  function toggleHidden(elem){
-    elem.classList.toggle('hide');
+  // function toggleHidden(elem){
+  //   elem.classList.toggle('hide');
+  // }
+
+  function addHidden(...elem){
+    elem.forEach(e => {
+      e.classList.add('hide');
+    });
+  }
+
+  function removeHidden(...elem){
+    elem.forEach(e => {
+      e.classList.remove('hide');
+    });
   }
 
   function nameError(elem){
@@ -115,14 +146,10 @@ const displayController = (function(){
 })();
 
 
-
-
-
-
 //Game logic module
 const gameLogic = (function(){
   
-  const gameBoard = [0,1,2,3,4,5,6,7,8];
+  let gameBoard = [0,1,2,3,4,5,6,7,8];
   let players;
   let currentPlayerTurn = 1;
 
@@ -135,27 +162,31 @@ const gameLogic = (function(){
       return "O";
     }
   }
+
+  //Probably a better way to do this
+  // but it works
   function checkWinConditions(){
     let g = gameBoard;
     let regex = /[0-9]/g
     if (g[0] == g[1] && g[0] ==g[2]||
-       g[3] == g[4] && g[3] ==g[5]||
-       g[6] == g[7] && g[6] ==g[8]||
-       g[0] == g[3] && g[0] ==g[6]||
-       g[1] == g[4] && g[1] ==g[7]||
-       g[2] == g[5] && g[2] ==g[8]||
-       g[0] == g[4] && g[0] ==g[8]||
-       g[2] == g[4] && g[2] ==g[6])
+        g[3] == g[4] && g[3] ==g[5]||
+        g[6] == g[7] && g[6] ==g[8]||
+        g[0] == g[3] && g[0] ==g[6]||
+        g[1] == g[4] && g[1] ==g[7]||
+        g[2] == g[5] && g[2] ==g[8]||
+        g[0] == g[4] && g[0] ==g[8]||
+        g[2] == g[4] && g[2] ==g[6])
     {
       declareWinner();
+      return;
     }if (!gameBoard.join('').match(regex)){
       declareDraw();
     }
   }  
       
-   function declareDraw(){
+  function declareDraw(){
      displayController.drawScreen();
-   } 
+  } 
   
 
   function declareWinner(){
@@ -172,6 +203,7 @@ const gameLogic = (function(){
   }
 
   function startGame(){
+    gameBoard = [0,1,2,3,4,5,6,7,8];
     players = displayController.getPlayers();
     setPlayerMark(players);
     setPlayerTurn(players);

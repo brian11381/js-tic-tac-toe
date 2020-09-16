@@ -109,7 +109,28 @@ body{
   justify-content: center;
 }
 
+#game-over-page{
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.8);
+  padding: 200px;
+  text-align: center;
+  z-index: 100;
+  position: absolute;
+  
+}
 
+#game-over-div{
+  font-size: 80px;
+  color: greenyellow;
+  margin-bottom: 20px;
+  margin-top: 140px;
+}
 
-
-
+.choose{
+  height: 50px;
+  width: 180px;
+  font-size: 1.2em;
+  background: var(--btn-background);
+  border-radius: var(--btn-border-radius);
+}
