@@ -31,10 +31,9 @@ const displayController = (function(){
   exit.addEventListener('click', resetPage);
 
   function resetPage(){
-    addHidden(gameOverPage);
     removeHidden(welcomPage);
     btnPickGame.forEach(btn => removeHidden(btn));
-    addHidden(player1Div, player2Div, startDiv);
+    addHidden(gameOverPage, player1Div, player2Div, startDiv);
   }
 
   function setPosition(){
@@ -42,6 +41,8 @@ const displayController = (function(){
   }
 
   function playerMove(){
+    //Each cell ID has a unique number at index[2]
+    //to correspond to gameBoard array index later
     position = this.id[2];
     let mark = gameLogic.PlayerMove();
     this.textContent = mark;
@@ -58,6 +59,8 @@ const displayController = (function(){
     removeHidden(gameOverPage);
   }
 
+  // Cell ID's are set up to correspond to grid position
+  // i.e. tl == top right
   (function fixGridBorders(){
     cells.forEach(cell => {
       if(cell.id.includes("t")){
@@ -76,7 +79,7 @@ const displayController = (function(){
     return [playerOne, playerTwo];
   }
 
-  //Form validation
+  //Form validation for name input
   function checkPlayers(){
     if(player1Input.value == ""){
       nameError(player1Input);
@@ -114,16 +117,11 @@ const displayController = (function(){
 
   function updateInputs(){
     btnPickGame.forEach(btn => addHidden(btn));
-    removeHidden(player1Div);
-    removeHidden(startDiv);
+    removeHidden(player1Div, startDiv);
     if(this.id == "pvp"){
       removeHidden(player2Div);
     }
   }
-
-  // function toggleHidden(elem){
-  //   elem.classList.toggle('hide');
-  // }
 
   function addHidden(...elem){
     elem.forEach(e => {
@@ -233,7 +231,7 @@ const gameLogic = (function(){
 })();
 
 
-//Player creator
+//Player object creator
 const playerFactory = (name) => {
   return {name};
 }
