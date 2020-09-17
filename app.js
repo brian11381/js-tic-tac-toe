@@ -21,6 +21,9 @@ const displayController = (function(){
   const retry = document.querySelector('#retry');
   const gameOverPage = document.querySelector('#game-over-page');
   const exit = document.querySelector('#exit');
+  const player1Status = document.querySelector('#player1-status');
+  const player2Status = document.querySelector('#player2-status');
+
 
   //Event listeners
   btnPickGame.forEach(btn => btn.addEventListener('click', setGameType));
@@ -30,6 +33,11 @@ const displayController = (function(){
   retry.addEventListener('click', checkPlayers);
   exit.addEventListener('click', resetPage);
 
+  function showPlayerStatus(players, current){
+    if(players[0] == current){
+      console.log('match');
+    }
+  }
   function resetPage(){
     removeHidden(welcomPage);
     btnPickGame.forEach(btn => removeHidden(btn));
@@ -39,7 +47,6 @@ const displayController = (function(){
  
   function botMove(index, mark){
     cells[index].textContent = mark;
-    console.log('botmiving');
   }
 
   function playerMove(){
@@ -150,7 +157,7 @@ const displayController = (function(){
     elem.style.border = "6px solid red";
   }
 
-  return {getPlayers, winnerScreen, drawScreen, botMove};
+  return {getPlayers, winnerScreen, drawScreen, botMove, showPlayerStatus};
 
 })();
 
@@ -186,6 +193,7 @@ const gameLogic = (function(){
       gameOver = true;
       return;
     }if (!gameBoard.join('').match(regex)){
+      gameOver = true;
       declareDraw();
     }
   }  
@@ -193,7 +201,6 @@ const gameLogic = (function(){
   function declareDraw(){
      displayController.drawScreen();
   } 
-  
 
   function declareWinner(){
     displayController.winnerScreen(currentPlayer.name);
@@ -201,7 +208,6 @@ const gameLogic = (function(){
   
   function updateBoard(position, mark){
     gameBoard.splice(position, 1, mark);
-    console.log(currentPlayer);
     checkWinConditions();
     endTurn();
     updateValidMoves();
@@ -213,12 +219,15 @@ const gameLogic = (function(){
   function startGame(){
     gameOver = false;
     gameBoard = [0,1,2,3,4,5,6,7,8];
+    updateValidMoves();
     players = displayController.getPlayers();
     setPlayerMark(players);
     setPlayerTurn(players);
+    // displayController.showPlayerStatus(players, currentPlayer);
     checkBotTurn();
   }
   
+
   function checkBotTurn(){
     if (currentPlayer.name == "AI Bot"){
       botMove();
