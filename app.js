@@ -21,8 +21,7 @@ const displayController = (function(){
   const retry = document.querySelector('#retry');
   const gameOverPage = document.querySelector('#game-over-page');
   const exit = document.querySelector('#exit');
-  const player1Status = document.querySelector('#player1-status');
-  const player2Status = document.querySelector('#player2-status');
+  const playerStatus = document.querySelector('.status');
 
 
   //Event listeners
@@ -33,10 +32,9 @@ const displayController = (function(){
   retry.addEventListener('click', checkPlayers);
   exit.addEventListener('click', resetPage);
 
-  function showPlayerStatus(players, current){
-    if(players[0] == current){
-      console.log('match');
-    }
+  function showPlayerStatus(current){
+    removeHidden(playerStatus);
+    playerStatus.textContent = `${current.name}'s turn`;
   }
   function resetPage(){
     removeHidden(welcomPage);
@@ -154,7 +152,7 @@ const displayController = (function(){
   }
 
   function nameError(elem){
-    elem.style.border = "6px solid red";
+    elem.classList.add('error');
   }
 
   return {getPlayers, winnerScreen, drawScreen, botMove, showPlayerStatus};
@@ -210,6 +208,7 @@ const gameLogic = (function(){
     gameBoard.splice(position, 1, mark);
     checkWinConditions();
     endTurn();
+    displayController.showPlayerStatus(currentPlayer);
     updateValidMoves();
     if(gameOver == false){
       checkBotTurn();
@@ -223,7 +222,7 @@ const gameLogic = (function(){
     players = displayController.getPlayers();
     setPlayerMark(players);
     setPlayerTurn(players);
-    // displayController.showPlayerStatus(players, currentPlayer);
+    displayController.showPlayerStatus(currentPlayer);
     checkBotTurn();
   }
   
@@ -233,6 +232,8 @@ const gameLogic = (function(){
       botMove();
     }
   }
+
+  //Random Bot AI
   function botMove(){
     let bot = currentPlayer;
     let len = validMoves.length;
@@ -280,8 +281,6 @@ const gameLogic = (function(){
       currentPlayer = players[0];
     }
   }
-
-
 
   return {startGame, PlayerMove, updateBoard};
 })();
